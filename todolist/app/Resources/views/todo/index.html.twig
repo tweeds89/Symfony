@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h2 class="page-header">Ostatnie zadania</h2>
+<table class="table table-bordered"> 
+    <thead> 
+        <tr> 
+            <th>#</th> 
+            <th>Zadanie</th> 
+            <th>Termin</th> 
+            <th></th>
+        </tr>
+    </thead> 
+    <tbody> 
+        {% for todo in todos %}
+        <tr> 
+            <th scope="row">{{ todo.id }}</th> 
+            <td>{{ todo.nazwa }}</td> 
+            <td>{{ todo.termin |date('F j, Y, g:i a') }}</td>
+            <td>
+                <a href = "/todos/details/{{ todo.id }}" class = "btn btn-success">Podgląd</a>
+                <a href = "/todos/edit/{{ todo.id }}" class = "btn btn-default">Edycja</a>
+                <a href = "/todos/delete/{{ todo.id }}" class = "btn btn-danger">Usuń</a>
+            </td> 
+        </tr>
+        {% endfor %}
+    </tbody> 
+</table>
+
+{% endblock %}
