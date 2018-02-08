@@ -1,7 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
-TODO DETAILS
+    <a class="btn btn-default" href="/">Wróć do zadań</a>
+    <hr>
+<h2 class="page-header">{{ todo.nazwa }}</h2>
+<ul class="list-group">
+    <li class="list-group-item">Kategoria: {{ todo.kategoria }}</li>
+    <li class="list-group-item">Priorytet: {{ todo.priorytet }}</li>
+    <li class="list-group-item">Termin: <strong> {{ todo.termin | date() }} </strong></li>
+</ul>
+<p>
+{{ todo.opis }}
+</p>
 
 {% endblock %}

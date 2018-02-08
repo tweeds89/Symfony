@@ -80,7 +80,64 @@ class TodoController extends Controller{
      */
     public function editAction($id, Request $request){
 
-        return $this->render('todo/edit.html.twig');          
+         $todo = $this->getDoctrine()->getRepository('AppBundle:Todo')
+            ->find($id);
+        
+            $now = new\DateTime('now');
+        
+            $todo->setNazwa($todo->getNazwa());
+            $todo->setKategoria($todo->getKategoria());
+            $todo->setOpis($todo->getOpis());
+            $todo->setPriorytet($todo->getPriorytet());
+            $todo->setTermin($todo->getTermin());
+            $todo->setDataUtworzenia($now);
+        
+        $form = $this->createFormBuilder($todo)
+            ->add('nazwa', TextType::class, array('attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
+            ->add('kategoria', TextType::class, array('attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
+            ->add('opis', TextareaType::class, array('attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
+            ->add('priorytet', ChoiceType::class, array('choices' =>array('Niski'=>'Niski', 'Normalny'=>'Normalny', 'Wysoki'=>'Wysoki'), 'attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
+            ->add('termin', DateTimeType::class, array('attr' => array('class' => 'formcontrol', 'style' => 'margin-bottom:15px')))
+            ->add('zapisz', SubmitType::class, array('label' =>'Aktualizuj', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom:15px')))
+            ->getForm();
+        
+        $form->handleRequest($request);
+        
+        if($form -> isSubmitted() && $form->isValid()){
+            $nazwa = $form['nazwa']->getData();
+            $kategoria = $form['kategoria']->getData();
+            $opis = $form['opis']->getData();
+            $priorytet = $form['priorytet']->getData();
+            $termin = $form['termin']->getData();
+            
+            $now = new\DateTime('now');
+            
+            $em = $this->getDoctrine()->getManager();
+            $todo = $em->getRepository('AppBundle:Todo')->find($id);
+            
+            $todo->setNazwa($nazwa);
+            $todo->setKategoria($kategoria);
+            $todo->setOpis($opis);
+            $todo->setPriorytet($priorytet);
+            $todo->setTermin($termin);
+            $todo->setDataUtworzenia($now);
+                      
+        
+            $em->flush();
+            
+            $this->addFlash(
+                'notice',
+                'Todo Uploaded'
+            );
+            
+            return $this->redirectToRoute('todo_list');
+            
+        }
+        
+        
+        return $this->render('todo/edit.html.twig',  array(
+            'todo' => $todo,
+            'form' => $form->createView()));         
     }
     
     /**
@@ -88,6 +145,29 @@ class TodoController extends Controller{
      */
     public function detailsAction($id){
 
-        return $this->render('todo/details.html.twig');          
+          $todo = $this->getDoctrine()->getRepository('AppBundle:Todo')
+            ->find($id);
+
+        return $this->render('todo/details.html.twig', 
+                             array('todo' => $todo));                     
+    }   
+    
+    /**
+     * @Route("/todos/delete/{id}", name="todo_delete")
+     */
+    public function deleteAction($id){
+
+        $em = $this->getDoctrine()->getManager();
+        $todo = $em->getRepository('AppBundle:Todo')->find($id); 
+        
+        $em->remove($todo);
+        $em->flush();
+        
+         $this->addFlash(
+                'notice',
+                'Zadanie usunięte'
+            );
+            
+            return $this->redirectToRoute('todo_list');
     }    
 }
